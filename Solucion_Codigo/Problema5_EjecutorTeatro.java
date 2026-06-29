@@ -1,49 +1,26 @@
-
 /* @author: Jhojan Merino
  * @version: 1.0
- * @fecha: 2024-06-10
- *
-Se desea gestionar la venta de entradas para un espectáculo en un teatro. El patio de butacas del teatro se divide en varias zonas, cada una identificada por su nombre. Los datos de las zonas son:
-    NOMBRE ZONA   NÚMERO DE LOCALIDADES   PRECIO NORMAL   PRECIO ABONADO
-    Principal     200                    25.0$           17.5$
-    PalcoB        40                     70.0$           40.0$
-    Central       400                    20.0$           14.0$
-    Lateral       100                    15.5$           10.0$
-
-Para comprar una entrada, el espectador indica la zona y presenta documento que justifique descuento (estudiante, abonado o pensionista). El vendedor crea la entrada del tipo apropiado y le asigna un identificador entero único.
-
-Una entrada tiene: identificador, zona y nombre del comprador.
-
-Precios:
- - Normal: precio normal de la zona.
- - Reducida: 15% de descuento sobre el precio normal.
- - Abonado: precio abonado de la zona.
-
-Operaciones: vender entrada, consultar entrada por id, listar entradas vendidas y calcular ingresos.
-*/
+ * 
+ * Se desea gestionar la venta de entradas para un espectáculo en un teatro.
+ * Las entradas pueden ser normales, reducidas o abonadas.
+ * Cada entrada tiene identificador, zona y comprador.
+ */
 
 class Zona {
 
     private String nombre;
-    private int capacidad;
-    private int localidadesVendidas;
     private double precioNormal;
     private double precioAbonado;
 
-    public Zona(String nombre, int capacidad, double precioNormal, double precioAbonado) {
+    public Zona(String nombre, double precioNormal, double precioAbonado) {
+
         this.nombre = nombre;
-        this.capacidad = capacidad;
-        this.localidadesVendidas = 0;
         this.precioNormal = precioNormal;
         this.precioAbonado = precioAbonado;
     }
 
     public String getNombre() {
         return nombre;
-    }
-
-    public int getCapacidad() {
-        return capacidad;
     }
 
     public double getPrecioNormal() {
@@ -54,258 +31,131 @@ class Zona {
         return precioAbonado;
     }
 
-    public boolean estaCompleta() {
-        return localidadesVendidas >= capacidad;
-    }
-
-    public boolean venderLocalidad() {
-        if (estaCompleta())
-            return false;
-
-        localidadesVendidas++;
-        return true;
-    }
 }
 
-abstract class Entrada {
+class Entrada {
 
-    private int id;
-    private String comprador;
-    private Zona zona;
-    protected String tipo;
+    protected int id;
+    protected Zona zona;
+    protected String comprador;
 
-    public Entrada(int id, Zona zona, String comprador, String tipo) {
+    public Entrada(int id, Zona zona, String comprador) {
+
         this.id = id;
         this.zona = zona;
         this.comprador = comprador;
-        this.tipo = tipo;
     }
 
-    public int getId() {
-        return id;
+    public double calcularPrecio() {
+
+        return zona.getPrecioNormal();
     }
 
-    public Zona getZona() {
-        return zona;
-    }
+    public String mostrar() {
 
-    public String getComprador() {
-        return comprador;
-    }
-
-    public String getTipo() {
-        return tipo;
-    }
-
-    public abstract double calcularPrecio();
-
-    @Override
-    public String toString() {
-        return "ID: " + id + " | " + comprador +
+        return "ID: " + id +
+                " | Comprador: " + comprador +
                 " | Zona: " + zona.getNombre() +
-                " | Tipo: " + tipo +
                 " | Precio: $" + calcularPrecio();
     }
-}
 
-class EntradaNormal extends Entrada {
-
-    public EntradaNormal(int id, Zona zona, String comprador) {
-        super(id, zona, comprador, "normal");
-    }
-
-    @Override
-    public double calcularPrecio() {
-        return getZona().getPrecioNormal();
-    }
 }
 
 class EntradaReducida extends Entrada {
 
-    private String tipoDescuento;
+    public EntradaReducida(int id, Zona zona, String comprador) {
 
-    public EntradaReducida(int id, Zona zona, String comprador, String tipoDescuento) {
-        super(id, zona, comprador, "reducida");
-        this.tipoDescuento = tipoDescuento;
+        super(id, zona, comprador);
     }
 
     @Override
     public double calcularPrecio() {
-        return getZona().getPrecioNormal() * 0.85;
+
+        return zona.getPrecioNormal() * 0.85;
     }
 
-    @Override
-    public String toString() {
-        return "ID: " + getId() +
-                " | " + getComprador() +
-                " | Zona: " + getZona().getNombre() +
-                " | Tipo: " + getTipo() +
-                " (" + tipoDescuento + ")" +
-                " | Precio: $" + calcularPrecio();
-    }
 }
 
 class EntradaAbonado extends Entrada {
 
     public EntradaAbonado(int id, Zona zona, String comprador) {
-        super(id, zona, comprador, "abonado");
+
+        super(id, zona, comprador);
     }
 
     @Override
     public double calcularPrecio() {
-        return getZona().getPrecioAbonado();
-    }
-}
 
-class Teatro {
-
-    private String nombre;
-    private Zona[] zonas;
-    private Entrada[] entradas;
-    private int numEntradas;
-
-    public Teatro(String nombre) {
-        this.nombre = nombre;
-        zonas = new Zona[4];
-        entradas = new Entrada[1000];
-        numEntradas = 0;
-        inicializarZonas();
+        return zona.getPrecioAbonado();
     }
 
-    private void inicializarZonas() {
-
-        zonas[0] = new Zona("Principal", 200, 25.0, 17.5);
-        zonas[1] = new Zona("PalcoB", 40, 70.0, 40.0);
-        zonas[2] = new Zona("Central", 400, 20.0, 14.0);
-        zonas[3] = new Zona("Lateral", 100, 15.5, 10.0);
-    }
-
-    private Zona buscarZona(String nombreZona) {
-
-        for (Zona z : zonas) {
-            if (z.getNombre().equalsIgnoreCase(nombreZona))
-                return z;
-        }
-
-        return null;
-    }
-
-    public void venderEntrada(String nombreZona, String comprador, String tipo) {
-
-        Zona z = buscarZona(nombreZona);
-
-        if (z == null) {
-            System.out.println("Zona no encontrada");
-            return;
-        }
-
-        int id = numEntradas + 1;
-        Entrada entrada = null;
-
-        switch (tipo.toLowerCase()) {
-
-            case "normal":
-                entrada = new EntradaNormal(id, z, comprador);
-                break;
-
-            case "reducida":
-                entrada = new EntradaReducida(id, z, comprador, "estudiante");
-                break;
-
-            case "abonado":
-                entrada = new EntradaAbonado(id, z, comprador);
-                break;
-        }
-
-        if (z.venderLocalidad()) {
-            entradas[numEntradas] = entrada;
-            numEntradas++;
-
-            System.out.println("Entrada vendida: " + entrada);
-        }
-    }
-
-    public void consultarEntrada(int id) {
-
-        for (int i = 0; i < numEntradas; i++) {
-
-            if (entradas[i].getId() == id) {
-                System.out.println("Consulta: " + entradas[i]);
-                return;
-            }
-        }
-
-        System.out.println("Entrada no encontrada");
-    }
-
-    public void mostrarEntradas() {
-
-        System.out.println("\n=== Entradas vendidas en " + nombre + " ===");
-
-        for (int i = 0; i < numEntradas; i++) {
-            System.out.println(entradas[i]);
-        }
-    }
-
-    public double calcularIngresos() {
-
-        double total = 0;
-
-        for (int i = 0; i < numEntradas; i++) {
-            total += entradas[i].calcularPrecio();
-        }
-
-        return total;
-    }
 }
 
 public class Problema5_EjecutorTeatro {
 
     public static void main(String[] args) {
 
-        Teatro miTeatro = new Teatro("Teatro Nacional");
+        Zona principal = new Zona(
+                "Principal",
+                25,
+                17.5);
 
-        miTeatro.venderEntrada("Principal", "Juan Pérez", "normal");
+        Zona central = new Zona(
+                "Central",
+                20,
+                14);
 
-        miTeatro.venderEntrada("Central", "María García", "reducida");
+        Zona palco = new Zona(
+                "PalcoB",
+                70,
+                40);
 
-        miTeatro.venderEntrada("PalcoB", "Carlos López", "abonado");
+        Entrada entrada1 = new Entrada(
+                1,
+                principal,
+                "Juan Perez");
 
-        miTeatro.venderEntrada("Lateral", "Ana Martínez", "normal");
+        Entrada entrada2 = new EntradaReducida(
+                2,
+                central,
+                "Maria Garcia");
 
-        miTeatro.venderEntrada("Principal", "Pedro Sánchez", "reducida");
+        Entrada entrada3 = new EntradaAbonado(
+                3,
+                palco,
+                "Carlos Lopez");
 
-        miTeatro.consultarEntrada(3);
+        System.out.println("=== ENTRADAS ===");
 
-        miTeatro.mostrarEntradas();
+        System.out.println(entrada1.mostrar());
 
-        System.out.println("\nIngresos totales: $"
-                + miTeatro.calcularIngresos());
+        System.out.println(entrada2.mostrar());
+
+        System.out.println(entrada3.mostrar());
+
+        double ingresos = entrada1.calcularPrecio()
+                + entrada2.calcularPrecio()
+                + entrada3.calcularPrecio();
+
+        System.out.println("\nIngresos totales: $" + ingresos);
+
     }
+
 }
+
 /*
- * Entrada vendida: ID: 1 | Juan Pérez | Zona: Principal | Tipo: normal |
- * Precio: $25.0
- * Entrada vendida: ID: 2 | María García | Zona: Central | Tipo: reducida
- * (estudiante) | Precio: $17.0
- * Entrada vendida: ID: 3 | Carlos López | Zona: PalcoB | Tipo: abonado |
- * Precio: $40.0
- * Entrada vendida: ID: 4 | Ana Martínez | Zona: Lateral | Tipo: normal |
- * Precio: $15.5
- * Entrada vendida: ID: 5 | Pedro Sánchez | Zona: Principal | Tipo: reducida
- * (estudiante) | Precio: $21.25
- * Consulta: ID: 3 | Carlos López | Zona: PalcoB | Tipo: abonado | Precio: $40.0
+ * RUN:
  * 
- * === Entradas vendidas en Teatro Nacional ===
- * ID: 1 | Juan Pérez | Zona: Principal | Tipo: normal | Precio: $25.0
- * ID: 2 | María García | Zona: Central | Tipo: reducida (estudiante) | Precio:
- * $17.0
- * ID: 3 | Carlos López | Zona: PalcoB | Tipo: abonado | Precio: $40.0
- * ID: 4 | Ana Martínez | Zona: Lateral | Tipo: normal | Precio: $15.5
- * ID: 5 | Pedro Sánchez | Zona: Principal | Tipo: reducida (estudiante) |
- * Precio: $21.25
+ * === ENTRADAS ===
  * 
- * Ingresos totales: $118.75
- * PS C:\Users\USER\OneDrive\Documentos\GitHub\apeb2-taller7-JhojanMerino\
- * Solucion_Codigo>
+ * ID: 1 | Comprador: Juan Perez | Zona: Principal | Precio: $25.0
+ * 
+ * ID: 2 | Comprador: Maria Garcia | Zona: Central | Precio: $17.0
+ * 
+ * ID: 3 | Comprador: Carlos Lopez | Zona: PalcoB | Precio: $40.0
+ * 
+ * 
+ * Ingresos totales: $82.0
+ * 
+ * BUILD SUCCESSFUL
  */

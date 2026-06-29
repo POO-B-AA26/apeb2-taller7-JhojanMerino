@@ -1,4 +1,3 @@
-
 /* @author = Jhojan Merino
  * Un sistema de envío de mensajes a móviles. Existen dos tipos de mensajes
  * que se pueden enviar entre móviles, mensajes de texto (SMS) y mensajes que contienen imágenes
@@ -13,128 +12,65 @@
 
 class Mensaje {
 
-    protected String remitenteNumero;
-    protected String remitenteNombre;
-    protected String destinatarioNumero;
-    protected String destinatarioNombre;
+    protected String remitente;
+    protected String destinatario;
 
-    public Mensaje(String remitenteNumero, String remitenteNombre,
-            String destinatarioNumero, String destinatarioNombre) {
-
-        this.remitenteNumero = remitenteNumero;
-
-        this.remitenteNombre = (remitenteNombre == null || remitenteNombre.trim().isEmpty())
-                ? "Sin Nombre"
-                : remitenteNombre;
-
-        this.destinatarioNumero = destinatarioNumero;
-
-        this.destinatarioNombre = (destinatarioNombre == null || destinatarioNombre.trim().isEmpty())
-                ? "Sin Nombre"
-                : destinatarioNombre;
+    public Mensaje(String remitente, String destinatario) {
+        this.remitente = remitente;
+        this.destinatario = destinatario;
     }
 
-    public String enviarMensaje() {
-
-        return "Mensaje enviado correctamente";
+    public void enviarMensaje() {
+        System.out.println("Mensaje enviado.");
     }
 
-    public String visualizarMensaje() {
-
-        return "Remitente: " + remitenteNumero
-                + " (" + remitenteNombre + ") -> Destinatario: "
-                + destinatarioNumero + " (" + destinatarioNombre + ")";
-    }
-
-    @Override
-    public String toString() {
-
-        return String.format(
-                "Remitente: %s (%s) -> Destinatario: %s (%s)",
-                remitenteNumero,
-                remitenteNombre,
-                destinatarioNumero,
-                destinatarioNombre);
+    public void visualizarMensaje() {
+        System.out.println("Remitente: " + remitente);
+        System.out.println("Destinatario: " + destinatario);
     }
 }
 
 class SMS extends Mensaje {
 
-    private String mensajeText;
+    private String texto;
 
-    public SMS(String remitenteNumero, String remitenteNombre,
-            String destinatarioNumero, String destinatarioNombre,
-            String mensajeText) {
-
-        super(remitenteNumero, remitenteNombre,
-                destinatarioNumero, destinatarioNombre);
-
-        this.mensajeText = mensajeText;
+    public SMS(String remitente, String destinatario, String texto) {
+        super(remitente, destinatario);
+        this.texto = texto;
     }
 
     @Override
-    public String enviarMensaje() {
-
-        return "SMS: Mensaje enviado con éxito de "
-                + remitenteNumero + " a "
-                + destinatarioNumero + ".";
+    public void enviarMensaje() {
+        System.out.println("SMS enviado.");
     }
 
     @Override
-    public String visualizarMensaje() {
-
-        return String.format(
-                "--- Mensaje de Texto (SMS) ---\n%s\nContenido: %s\n-----------------------------",
-                super.toString(),
-                mensajeText);
-    }
-
-    @Override
-    public String toString() {
-
-        return super.toString()
-                + " | Tipo: SMS | Mensaje: \""
-                + mensajeText + "\"";
+    public void visualizarMensaje() {
+        System.out.println("=== SMS ===");
+        super.visualizarMensaje();
+        System.out.println("Mensaje: " + texto);
     }
 }
 
 class MMS extends Mensaje {
 
-    private String nombreFichero;
+    private String imagen;
 
-    public MMS(String remitenteNumero, String remitenteNombre,
-            String destinatarioNumero, String destinatarioNombre,
-            String nombreFichero) {
-
-        super(remitenteNumero, remitenteNombre,
-                destinatarioNumero, destinatarioNombre);
-
-        this.nombreFichero = nombreFichero;
+    public MMS(String remitente, String destinatario, String imagen) {
+        super(remitente, destinatario);
+        this.imagen = imagen;
     }
 
     @Override
-    public String enviarMensaje() {
-
-        return "MMS: Mensaje multimedia enviado con éxito de "
-                + remitenteNumero + " a "
-                + destinatarioNumero + ".";
+    public void enviarMensaje() {
+        System.out.println("MMS enviado.");
     }
 
     @Override
-    public String visualizarMensaje() {
-
-        return String.format(
-                "--- Mensaje Multimedia (MMS) ---\n%s\nFichero Imagen: %s.png\n---------------------------------",
-                super.toString(),
-                nombreFichero);
-    }
-
-    @Override
-    public String toString() {
-
-        return super.toString()
-                + " | Tipo: MMS | Fichero: \""
-                + nombreFichero + "\"";
+    public void visualizarMensaje() {
+        System.out.println("=== MMS ===");
+        super.visualizarMensaje();
+        System.out.println("Imagen: " + imagen);
     }
 }
 
@@ -144,38 +80,38 @@ public class Problema3_EjecutorMensaje {
 
         SMS sms = new SMS(
                 "0987654321",
-                "Jhojan Merino",
                 "0991234567",
-                "Ana Lopez",
-                "Hola Ana, ya terminé el taller.");
+                "Hola Ana");
 
         MMS mms = new MMS(
                 "0987654321",
-                "Jhojan Merino",
                 "0998887777",
-                null,
-                "Mensajes");
+                "foto.png");
 
-        System.out.println(mms.enviarMensaje());
-
-        System.out.println();
-
-        System.out.println(sms.visualizarMensaje());
+        sms.enviarMensaje();
+        sms.visualizarMensaje();
 
         System.out.println();
 
-        System.out.println(mms.visualizarMensaje());
+        mms.enviarMensaje();
+        mms.visualizarMensaje();
     }
 }
+
 /*
- * --- Mensaje de Texto (SMS) ---
- * Remitente: 0987654321 (Jhojan Merino) -> Destinatario: 0991234567 (Ana Lopez)
- * Contenido: Hola Ana, ya terminé el taller.
- * -----------------------------
+ * RUN:
  * 
- * --- Mensaje Multimedia (MMS) ---
- * Remitente: 0987654321 (Jhojan Merino) -> Destinatario: 0998887777 (Sin
- * Nombre)
- * Fichero Imagen: Mensajes.png
- * ---------------------------------
+ * SMS enviado.
+ * === SMS ===
+ * Remitente: 0987654321
+ * Destinatario: 0991234567
+ * Mensaje: Hola Ana
+ * 
+ * MMS enviado.
+ * === MMS ===
+ * Remitente: 0987654321
+ * Destinatario: 0998887777
+ * Imagen: foto.png
+ * 
+ * BUILD SUCCESSFUL
  */

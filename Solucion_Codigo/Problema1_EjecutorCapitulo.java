@@ -1,4 +1,6 @@
-/* @author = Jhojan Merino
+/* 
+@author = Jhojan Merino
+
 Crea una estructura de clases que permita representar la información de un libro.
 El libro está compuesto por capítulos.
 A su vez, cada capítulo está formado por secciones.
@@ -7,193 +9,127 @@ Y finalmente, cada párrafo está compuesto por palabras.
 Se debe mostrar por pantalla la información del libro.
 */
 
-class Palabra {
+class Contenido {
 
-    String texto;
+    protected String nombre;
 
-    public Palabra(String texto) {
-        this.texto = texto;
+    public Contenido(String nombre) {
+        this.nombre = nombre;
     }
 
-    public String toString() {
-        return texto;
-    }
-}
-
-class Sentencia {
-
-    java.util.List<Palabra> palabras = new java.util.ArrayList<>();
-
-    public void agregarPalabra(Palabra p) {
-        palabras.add(p);
-    }
-
-    public String toString() {
-
-        StringBuilder sb = new StringBuilder();
-
-        for (Palabra p : palabras) {
-            sb.append(p).append(" ");
-        }
-
-        return sb.toString().trim();
+    public void mostrar() {
+        System.out.println(nombre);
     }
 }
 
-class Parrafo {
+class Parrafo extends Contenido {
 
-    java.util.List<Sentencia> sentencias = new java.util.ArrayList<>();
-
-    public void agregarSentencia(Sentencia s) {
-        sentencias.add(s);
+    public Parrafo(String texto) {
+        super(texto);
     }
 
-    public String toString() {
-
-        StringBuilder sb = new StringBuilder();
-
-        for (Sentencia s : sentencias) {
-            sb.append(s).append("\n");
-        }
-
-        return sb.toString();
+    @Override
+    public void mostrar() {
+        System.out.println("Párrafo: " + nombre);
     }
 }
 
-class Figura {
+class Figura extends Contenido {
 
-    String urlImagen;
-    String pieDeFoto;
-
-    public Figura(String url, String pie) {
-        this.urlImagen = url;
-        this.pieDeFoto = pie;
+    public Figura(String descripcion) {
+        super(descripcion);
     }
 
-    public String toString() {
-
-        return "[Figura]\n"
-                + "URL: " + urlImagen
-                + "\nPie: " + pieDeFoto;
+    @Override
+    public void mostrar() {
+        System.out.println("Figura: " + nombre);
     }
 }
 
 class Seccion {
 
-    String titulo;
-
-    java.util.List<Object> componentes = new java.util.ArrayList<>();
+    private String titulo;
+    private Contenido contenido1;
+    private Contenido contenido2;
 
     public Seccion(String titulo) {
         this.titulo = titulo;
     }
 
-    public void agregarComponente(Object comp) {
-        componentes.add(comp);
+    public void setContenido1(Contenido contenido1) {
+        this.contenido1 = contenido1;
     }
 
-    public String toString() {
+    public void setContenido2(Contenido contenido2) {
+        this.contenido2 = contenido2;
+    }
 
-        StringBuilder sb = new StringBuilder();
+    public void mostrar() {
 
-        sb.append("Sección: ")
-                .append(titulo)
-                .append("\n");
+        System.out.println("Sección: " + titulo);
 
-        for (Object c : componentes) {
-            sb.append(c).append("\n");
+        if (contenido1 != null) {
+            contenido1.mostrar();
         }
 
-        return sb.toString();
+        if (contenido2 != null) {
+            contenido2.mostrar();
+        }
     }
 }
 
 class Capitulo {
 
-    String titulo;
-    int numero;
-
-    java.util.List<Seccion> secciones = new java.util.ArrayList<>();
+    private String titulo;
+    private int numero;
+    private Seccion seccion;
 
     public Capitulo(String titulo, int numero) {
-
         this.titulo = titulo;
         this.numero = numero;
     }
 
-    public void agregarSeccion(Seccion s) {
-
-        secciones.add(s);
+    public void setSeccion(Seccion seccion) {
+        this.seccion = seccion;
     }
 
-    public String toString() {
+    public void mostrar() {
 
-        StringBuilder sb = new StringBuilder();
+        System.out.println("Capítulo " + numero + ": " + titulo);
 
-        sb.append("Capítulo ")
-                .append(numero)
-                .append(": ")
-                .append(titulo)
-                .append("\n\n");
-
-        for (Seccion s : secciones) {
-            sb.append(s);
+        if (seccion != null) {
+            seccion.mostrar();
         }
-
-        return sb.toString();
     }
 }
 
 public class Problema1_EjecutorCapitulo {
 
-
     public static void main(String[] args) {
 
-        Palabra p1 = new Palabra("Hola");
-        Palabra p2 = new Palabra("mundo");
-        Palabra p3 = new Palabra("Java");
+        Parrafo parrafo = new Parrafo("Hola mundo Java");
 
-        Sentencia sentencia = new Sentencia();
-
-        sentencia.agregarPalabra(p1);
-        sentencia.agregarPalabra(p2);
-        sentencia.agregarPalabra(p3);
-
-        Parrafo parrafo = new Parrafo();
-
-        parrafo.agregarSentencia(sentencia);
-
-        Figura figura = new Figura(
-                "imagen.jpg",
-                "Esta es una figura de ejemplo");
+        Figura figura = new Figura("Esta es una figura de ejemplo");
 
         Seccion seccion = new Seccion("Introducción");
 
-        seccion.agregarComponente(parrafo);
+        seccion.setContenido1(parrafo);
+        seccion.setContenido2(figura);
 
-        seccion.agregarComponente(figura);
+        Capitulo capitulo = new Capitulo("Programación en Java", 1);
 
-        Capitulo capitulo = new Capitulo(
-                "Programación en Java",
-                1);
+        capitulo.setSeccion(seccion);
 
-        capitulo.agregarSeccion(seccion);
-
-        System.out.println(capitulo);
+        capitulo.mostrar();
     }
 }
+
 /*
---- Estructura del Libro ---
-
-Capítulo 1: Programación en Java
-
-Sección: Introducción
-
-Hola mundo Java 
-
-[Figura]
-URL: imagen.jpg
-Pie: Esta es una figura de ejemplo
-
-
-*/
+ * --------- Salida ---------
+ * 
+ * Capítulo 1: Programación en Java
+ * Sección: Introducción
+ * Párrafo: Hola mundo Java
+ * Figura: Esta es una figura de ejemplo
+ * 
+ */
