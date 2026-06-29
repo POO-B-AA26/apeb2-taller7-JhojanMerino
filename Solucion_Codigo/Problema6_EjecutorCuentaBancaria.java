@@ -92,6 +92,25 @@ class CuentaAhorros extends Cuenta {
 
 }
 
+class CuentaPlatino extends Cuenta {
+    public CuentaPlatino(String nroCuenta, String nombCliente, double saldo, double deposito, double retiro) {
+        super(nroCuenta, nombCliente, saldo, deposito, retiro);
+    }
+
+    @Override
+    public double calcularInteres() {
+        return getSaldo() * 0.10;
+    }
+
+    public double calcularBalance() {
+        double balance = super.calcularBalance();
+        balance += calcularInteres();
+        super.setSaldo(balance);
+        return balance;
+    }
+
+}
+
 public class Problema6_EjecutorCuentaBancaria {
     public static void main(String[] args) {
         CuentaAhorros cuentaAhorros = new CuentaAhorros("123456789", "Jhojan Merino", 1000, 500, 200);
@@ -109,6 +128,14 @@ public class Problema6_EjecutorCuentaBancaria {
         System.out.println("Depósito: " + cuentaCheques.getDeposito());
         System.out.println("Retiro: " + cuentaCheques.getRetiro());
         System.out.println("Balance Actual: " + cuentaCheques.calcularBalance());
+
+        CuentaPlatino cuentaPlatino = new CuentaPlatino("123456789", "Jhojan Merino", 1000, 500, 200);
+        System.out.println("Número de Cuenta: " + cuentaPlatino.getNroCuenta());
+        System.out.println("Nombre del Cliente: " + cuentaPlatino.getNombCliente());
+        System.out.println("Saldo: " + cuentaPlatino.getSaldo());
+        System.out.println("Depósito: " + cuentaPlatino.getDeposito());
+        System.out.println("Retiro: " + cuentaPlatino.getRetiro());
+        System.out.println("Balance Actual: " + cuentaPlatino.calcularBalance());
 
     }
 
